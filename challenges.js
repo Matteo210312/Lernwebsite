@@ -1,0 +1,8 @@
+const CHALLENGES=[
+{id:'c1',area:'Programming',t:'Einfacher Taschenrechner',task:'Schreibe in Python oder JavaScript einen Taschenrechner für +, −, × und ÷.',goals:'Variablen, Funktionen, Eingaben.',crit:'Alle 4 Rechenarten funktionieren; Division durch 0 wird abgefangen; Code ist kommentiert.'},
+{id:'c2',area:'Programming',t:'Kleine Website',task:'Baue eine Seite über dein Hobby mit HTML und CSS und veröffentliche sie mit GitHub Pages.',goals:'HTML, CSS, Git und GitHub.',crit:'Mindestens 3 Abschnitte; auf dem Handy gut lesbar; online erreichbar.'},
+{id:'c3',area:'AI',t:'Prompt-Challenge',task:'Entwickle einen Prompt, der eine KI als Lerntrainer arbeiten lässt, und teste ihn dreimal.',goals:'Prompt Engineering.',crit:'Rolle, Ziel und Format sind genannt; Ergebnis wurde geprüft; Verbesserung dokumentiert.'},
+{id:'c4',area:'Business',t:'Geschäftsmodell skizzieren',task:'Beschreibe eine fiktive Geschäftsidee mit Kunde, Problem, Einnahmen und Kosten.',goals:'Geschäftsmodelle, Marktdenken.',crit:'Echtes Problem benannt; Einnahmen größer als Kosten gezeigt; Konkurrenz genannt.'},
+{id:'c5',area:'E-Commerce',t:'Dropshipping-Kalkulation',task:'Kalkuliere ein fiktives Produkt mit Einkauf, Versand, Werbung und Retouren.',goals:'Marge, Wirtschaftlichkeit.',crit:'Alle Kosten enthalten; Marge in Prozent berechnet; Annahmen erklärt.'},
+{id:'c6',area:'Marketing',t:'Produktbeschreibung',task:'Schreibe eine Produktbeschreibung nach AIDA für ein fiktives Produkt.',goals:'Copywriting, Nutzen statt Eigenschaften.',crit:'Alle 4 AIDA-Schritte; Nutzen wird genannt; keine falschen Versprechen.'}
+];
