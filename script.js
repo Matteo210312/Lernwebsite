@@ -3,7 +3,7 @@ esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'
 let S={name:'',xp:0,done:{},ch:{},fav:{},notes:{},hist:[],last:null,projects:[],theme:matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'};
 try{Object.assign(S,JSON.parse(localStorage.getItem(K)||'{}'))}catch(e){}
 const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}},
-LV=['Beginner','Learner','Builder','Developer','Entrepreneur','Advanced'],TH=[0,50,150,300,500,750],
+LV=['Beginner','Learner','Builder','Developer','Entrepreneur','Advanced'],TH=[0,100,300,600,1000,1600],
 lvl=()=>TH.filter(t=>S.xp>=t).length-1,
 L=AREAS.flatMap(a=>a.lessons.map(l=>({...l,a}))),
 lesson=id=>L.find(l=>l.id===id),
@@ -30,7 +30,8 @@ return `<div class="v"><h1>Hallo${S.name?', '+esc(S.name):''}! 👋</h1>`
 function areas(){const f=L.filter(l=>S.fav[l.id]);
 return `<div class="v"><h1>Lernbereiche</h1><div class="grid">${AREAS.map(a=>`<a class="card" href="#area/${a.id}"><b>${a.ic} ${a.n}</b><p class="note">${a.d}</p>${bar(pct(nDone(a.lessons),a.lessons.length))}<span class="note">${nDone(a.lessons)} von ${a.lessons.length} Lektionen</span></a>`).join('')}</div><h2>⭐ Favoriten</h2>${f.map(lc).join('')||'<p class="note">Tippe in einer Lektion auf ☆.</p>'}<h2>Lernhistorie</h2>${S.hist.slice(0,8).map(h=>lesson(h.id)?`<p class="note">${new Date(h.t).toLocaleString('de-AT')}: ${esc(lesson(h.id).t)}</p>`:'').join('')||'<p class="note">Noch leer.</p>'}</div>`}
 
-const area=id=>{const a=AREAS.find(x=>x.id===id);return a?`<div class="v"><a href="#areas" class="note">Zurück zu Lernbereiche</a><h1>${a.ic} ${a.n}</h1><p>${a.d}</p>${a.lessons.map(l=>lc({...l,a})).join('')}${a.legal?LEGAL:''}</div>`:areas()};
+const LVLS=['Beginner','Intermediate','Advanced','Expert'],xpOf=c=>({Beginner:50,Intermediate:100,Advanced:150,Expert:250})[c.lv||'Beginner'];
+const area=id=>{const a=AREAS.find(x=>x.id===id);if(!a)return areas();const rd=ROAD[a.id]||[];return `<div class="v"><a href="#areas" class="note">Zurück zu Lernbereiche</a><h1>${a.ic} ${a.n}</h1><p>${a.d}</p>${LVLS.map((v,i)=>{const ls=a.lessons.filter(l=>l.lv===v),pl=i&&rd[i-1]?rd[i-1].split(';'):[];return ls.length+pl.length?`<h2>${v}</h2>${ls.map(l=>lc({...l,a})).join('')}${pl.map(t=>`<div class="card note">🔜 Geplant: ${t}</div>`).join('')}`:''}).join('')}${a.legal?LEGAL:''}</div>`};
 
 function lessonV(id){
 const l=lesson(id);if(!l)return areas();
@@ -41,13 +42,13 @@ return `<div class="v"><a href="#area/${l.a.id}" class="note">Zurück zu ${l.a.n
 +sec(6,'Wissens-Check',l.quiz.map((q,i)=>`<div class="card"><b>${q.q}</b>${q.o.map((o,j)=>`<button class="btn g opt ${Q[id+'.'+i]===j?(j===q.a?'ok':'no'):''}" data-act="quiz" data-v="${id}|${i}|${j}">${o}</button>`).join('')}</div>`).join(''))
 +sec(7,'Abschlussaufgabe',`<p>${l.task}</p>`)
 +`<h2>📝 Notizen</h2><textarea rows="4" data-note="${id}" placeholder="Nur in diesem Browser gespeichert">${esc(S.notes[id]||'')}</textarea>`
-+(S.done[id]?'<p>✅ Lektion abgeschlossen</p>':`<button class="btn" data-act="done" data-v="${id}" ${ok?'':'disabled'}>Lektion abschließen (+50 XP)</button><p class="note">Beantworte den Wissens-Check richtig, dann kannst du abschließen.</p>`)+(l.a.legal?LEGAL:'')+'</div>'}
++(S.done[id]?'<p>✅ Lektion abgeschlossen</p>':`<button class="btn" data-act="done" data-v="${id}" ${ok?'':'disabled'}>Lektion abschließen (+${xpOf(l)} XP)</button><p class="note">Beantworte den Wissens-Check richtig, dann kannst du abschließen.</p>`)+(l.a.legal?LEGAL:'')+'</div>'}
 
-const chV=()=>`<div class="v"><h1>Challenges</h1><p class="note">Es gibt keine automatische Prüfung. Bewerte dich ehrlich anhand der Kriterien.</p>${CHALLENGES.map(c=>`<div class="card"><b>${S.ch[c.id]?'✅':'🎯'} ${c.t}</b> <span class="tag">${c.area}</span><p>${c.task}</p><p class="note"><b>Lernziele:</b> ${c.goals}<br><b>Bewertung:</b> ${c.crit}</p>${S.ch[c.id]?'':`<button class="btn" data-act="chdone" data-v="${c.id}">Erledigt (+100 XP)</button>`}</div>`).join('')}</div>`;
+const chV=a=>{const f=LVLS.includes(a)?a:'',ls=CHALLENGES.filter(c=>!f||(c.lv||'Beginner')===f);return `<div class="v"><h1>Challenges</h1><p>${['Alle',...LVLS].map(v=>`<a class="tag" href="#challenges/${v==='Alle'?'':v}">${v}</a>`).join(' ')}</p><p class="note">Es gibt keine automatische Prüfung. Bewerte dich ehrlich anhand der Kriterien.</p>${ls.map(c=>`<div class="card"><b>${S.ch[c.id]?'✅':'🎯'} ${c.t}</b> <span class="tag">${c.area}</span> <span class="tag">${c.lv||'Beginner'}</span><p>${c.task}</p><p class="note"><b>Lernziele:</b> ${c.goals}<br><b>Bewertung:</b> ${c.crit}</p>${S.ch[c.id]?'':`<button class="btn" data-act="chdone" data-v="${c.id}">Erledigt (+${xpOf(c)} XP)</button>`}</div>`).join('')}</div>`};
 
 const projV=()=>`<div class="v"><h1>Projekte</h1><div class="card"><input id="pt" maxlength="60" placeholder="Projektname"><select id="pty">${PTYPES.map(t=>`<option>${t}</option>`).join('')}</select><button class="btn" data-act="padd">Projekt anlegen</button></div>${S.projects.map(p=>`<div class="card"><b>${esc(p.t)}</b> <span class="tag">${p.ty}</span> <span class="tag">${p.s}</span><textarea rows="2" data-pn="${p.id}" placeholder="Notizen und nächste Schritte">${esc(p.n||'')}</textarea><button class="btn g" data-act="pst" data-v="${p.id}">Status ändern</button> <button class="btn g" data-act="pdel" data-v="${p.id}">Löschen</button></div>`).join('')||'<p class="note">Noch keine Projekte.</p>'}</div>`;
 
-const PH=[['Programmieren & digitale Grundlagen',['prog1']],['Webentwicklung & GitHub',['web1']],['Künstliche Intelligenz & AI-Anwendungen',['ai1']],['Business-Grundlagen & Unternehmertum',['biz1','fin1']],['E-Commerce & Marketing',['eco1','mkt1']],['Eigene Projekte & Unternehmenspartnerschaften',null]];
+const PH=[['HTL-Grundlagen (1. Klasse)',['mat1','de1','en1','geo1','phy1','log1','hw1','kon1','wk1']],['Programmieren & digitale Grundlagen',['prog1','clang1','clang2']],['Webentwicklung & GitHub',['web1']],['Künstliche Intelligenz & AI-Anwendungen',['ai1']],['Business-Grundlagen & Unternehmertum',['biz1','fin1']],['E-Commerce & Marketing',['eco1','mkt1']],['Eigene Projekte & Unternehmenspartnerschaften',null]];
 const pathV=()=>`<div class="v"><h1>My Learning Path</h1>${PH.map((p,i)=>{const ls=p[1]?p[1].map(lesson):null,v=ls?pct(nDone(ls),ls.length):Math.min(100,S.projects.filter(x=>x.s==='Completed').length*100);return `<div class="card"><b>Phase ${i+1}: ${p[0]}</b>${bar(v)}<span class="note">${v} % geschafft</span>${ls?ls.map(lc).join(''):'<p class="note">Setze ein Projekt auf „Completed“, um diese Phase abzuschließen.</p>'}</div>`}).join('')}</div>`;
 
 const DEMO=[[/variabl/i,'Eine Variable ist eine beschriftete Box für einen Wert, z. B. alter = 14. Den Inhalt kannst du später ändern.'],[/schleif|loop/i,'Eine Schleife wiederholt Code: for i in range(3): print(i) gibt 0, 1 und 2 aus.'],[/marge|gewinn/i,'Marge = (Preis − Kosten) ÷ Preis. Fiktives Beispiel: 20 € Preis, 12 € Kosten ergibt 40 % Marge.'],[/fehler|error|bug/i,'Lies die Fehlermeldung von unten nach oben: Zeile, Fehlertyp, Ursache. Oft sind es Tippfehler oder falsche Einrückung.'],[/quiz|frage/i,'Quizfrage: Welcher Datentyp ist "Hallo"? (int, float oder str)']];
@@ -63,8 +64,8 @@ theme(){S.theme=S.theme==='dark'?'light':'dark';save();document.documentElement.
 name(){S.name=$('#nm').value.trim().slice(0,20);save();route(true)},
 fav(id){S.fav[id]=!S.fav[id];save();route(true)},
 quiz(v){const[id,i,j]=v.split('|');Q[id+'.'+i]=+j;route(true)},
-done(id){const l=lesson(id);if(!l||S.done[id]||!l.quiz.every((q,i)=>Q[id+'.'+i]===q.a))return;S.done[id]=1;S.xp+=50;save();route(true)},
-chdone(id){if(S.ch[id])return;S.ch[id]=1;S.xp+=100;save();route(true)},
+done(id){const l=lesson(id);if(!l||S.done[id]||!l.quiz.every((q,i)=>Q[id+'.'+i]===q.a))return;S.done[id]=1;S.xp+=xpOf(l);save();route(true)},
+chdone(id){const c=CHALLENGES.find(x=>x.id===id);if(!c||S.ch[id])return;S.ch[id]=1;S.xp+=xpOf(c);save();route(true)},
 padd(){const t=$('#pt').value.trim();if(!t)return;S.projects.unshift({id:''+Date.now(),t:t.slice(0,60),ty:$('#pty').value,s:PSTAT[0]});save();route(true)},
 pst(id){const p=S.projects.find(x=>x.id===id);if(p){p.s=PSTAT[(PSTAT.indexOf(p.s)+1)%PSTAT.length];save();route(true)}},
 pdel(id){S.projects=S.projects.filter(x=>x.id!==id);save();route(true)},

@@ -29,3 +29,15 @@ Persönliche Lernplattform mit HTML5, CSS3 und Vanilla JavaScript. Kein Build, k
 
 ## Hinweise
 Lernmaterial, keine Rechts- oder Finanzberatung. Beispiele sind fiktiv. Daten liegen nur lokal im Browser (localStorage). Keine echten persönlichen Daten eingeben. Für echte Geschäfte als Minderjähriger: Eltern einbeziehen.
+
+## Version 2
+- Neue Datei `faecher.js`: Mathematik, Deutsch, Englisch, Geographie, Physik, Logik, Hardwareentwicklung, Konstruktion, Werkstoffe und Programmieren in C.
+- Vier Stufen (Beginner, Intermediate, Advanced, Expert). Geplante Themen stehen in `ROAD` (`faecher.js`) und erscheinen als „Geplant“. Eine Lektion fertig geschrieben? Dann in `lessons` ergänzen und den Titel aus `ROAD` streichen.
+- Challenges haben Stufen und einen Filter. XP: Beginner 50, Intermediate 100, Advanced 150, Expert 250.
+- **Wichtig:** Lektions- und Challenge-`id`s nie ändern, sonst geht gespeicherter Fortschritt verloren.
+- Die Inhalte sind eigene Texte und am allgemeinen HTL-Lehrplan orientiert. Die genaue Stoffverteilung der 1. Klasse in Braunau mit deinen Lehrkräften abgleichen und in `faecher.js` anpassen.
+
+## Vom Lernprojekt zum Produkt (später)
+1. Zuerst Qualität: eigene Texte, keine kopierten Schulbücher, Inhalte prüfen lassen.
+2. Dann Backend, Benutzerkonten, Datenschutz (DSGVO) und Impressum.
+3. Erst danach Bezahlfunktionen. Als Minderjähriger brauchst du dafür deine Eltern bzw. Erziehungsberechtigten. Rechtliches (z. B. Gewerbe) klärst du mit einer Beratung, etwa dem Gründerservice der Wirtschaftskammer.
